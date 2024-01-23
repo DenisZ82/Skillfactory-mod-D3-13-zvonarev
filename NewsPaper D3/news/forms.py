@@ -1,9 +1,15 @@
 from django import forms
 from django.core.exceptions import ValidationError
-from .models import Post
+from .models import Post, Author
+from django_filters import ModelMultipleChoiceFilter
 
 
 class PostForm(forms.ModelForm):
+    # author = ModelMultipleChoiceFilter(
+    #     field_name='author__author_id',
+    #     queryset=Author.objects.all()
+    # )
+
     class Meta:
         model = Post
         # fields = '__all__'
