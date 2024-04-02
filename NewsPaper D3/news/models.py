@@ -2,6 +2,7 @@ from django.db import models
 from django.contrib.auth.models import User
 from django.db.models import Sum
 from django.db.models.functions import Coalesce
+from django.urls import reverse
 
 
 class Author(models.Model):
@@ -16,16 +17,22 @@ class Author(models.Model):
         self.rating = posts_rating * 3 + comments_rating + posts_comments_rating
         self.save()
 
+    def __str__(self):
+        return f'{self.user.username}'
+
 
 class Category(models.Model):
     name = models.CharField(max_length=80, unique=True)
+
+    # def __str__(self):
+    #     return f'{self.name}'
 
     def __str__(self):
         return self.name.title()
 
 
 class Post(models.Model):
-    article = 'AR'
+    article = 'AR' or 'Статья'
     news = 'NE'
     CATEGORY_MATERIAL = [
         (article, 'Статья'),
@@ -54,10 +61,32 @@ class Post(models.Model):
     def __str__(self):
         return f'{self.title}: {self.text[:32]}'
 
+    def get_absolute_url(self):
+        return reverse('post_detail', args=[str(self.id)])
+
 
 class PostCategory(models.Model):
     connectCategory = models.ForeignKey(Category, on_delete=models.CASCADE)
     connectPost = models.ForeignKey(Post, on_delete=models.CASCADE)
+
+    def __str__(self):
+        return f'{self.connectCategory}'
+
+
+class Subscription(models.Model):
+    user = models.ForeignKey(
+        to=User,
+        on_delete=models.CASCADE,
+        related_name='subscriptions',
+    )
+    category = models.ForeignKey(
+        to='Category',
+        on_delete=models.CASCADE,
+        related_name='subscriptions',
+    )
+
+    def __str__(self):
+        return f'{self.user.username}'
 
 
 class Comment(models.Model):
