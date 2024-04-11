@@ -1,15 +1,13 @@
-<!--  наследуемся от шаблона default.html, который мы создавали для flatpages -->
-{% extends 'flatpages/default.html' %}
-
 {% load i18n %}
+{% load tz %}
 
-{% load custom_filters %}
-
-{% block title %}
-Post
-{% endblock title %}
-
-{% block content %}
+<html lang="en">
+<head>
+    <style>
+        body {background-color: {% if current_time.hour >= 19 or current_time.hour <= 7 %} darkcyan {% else %} powderblue {% endif %};}
+    </style>
+</head>
+<body>
     <form action="{% url 'set_language' %}" method="POST"> {% csrf_token %} <!-- Не забываем по csrf_token
     для POST запросов -->
         <input type="hidden" name="next" value="{{ redirect_to }}">
@@ -26,8 +24,20 @@ Post
         <input type="submit" value="set">
     </form>
 
-<h1>{{ post.title }}</h1>
-<h6>{{ post.time_in|date:'d.M.Y' }}</h6>
-<hr>
-{{ post.text|censor }}
-{% endblock content %}
+    {% get_current_timezone as TIME_ZONE %}
+    <form action="" method="POST">
+        {% csrf_token %}
+        <label for="timezone">Time zone:</label>
+        <select name="timezone">
+            {% for tz in timezones %}
+            <option value="{{ tz }}"{% if tz == TIME_ZONE %} selected{% endif %}>{{ tz }}</option>
+            {% endfor %}
+        </select>
+        <input type="submit" value="Set">
+    </form>
+
+    {{ TIME_ZONE }}
+    {{ time_now|timezone:TIME_ZONE }} <!-- Отображаем время в выбранном часовом поясе  -->
+
+</body>
+</html>

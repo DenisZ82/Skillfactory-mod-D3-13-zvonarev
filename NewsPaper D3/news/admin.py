@@ -1,5 +1,17 @@
 from django.contrib import admin
 from .models import Post, Comment, Category, Author, Subscription, PostCategory
+from modeltranslation.admin import TranslationAdmin  # импортируем модель амдинки
+# (вспоминаем модуль про переопределение стандартных админ-инструментов)
+
+# Регистрируем модели для перевода в админке
+
+
+class CategoryTrAdmin(TranslationAdmin):
+    model = Category
+
+
+class PostTrAdmin(TranslationAdmin):
+    model = Post
 
 
 class PostAdmin(admin.ModelAdmin):
